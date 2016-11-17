@@ -1,16 +1,16 @@
 GSVD <- function(Data, PLin = NULL, PCol = NULL) {
-  # Function that performs the Decomposition of Values
-  # Generalized Singular Matrix (Data)
+  # Function that performs Generalized Singular Value Decomposition
   
-  # Input:
-  # Data - Matrix Used for Decomposition
-  # PLin - Vector with weights for lines
-  # PCol - vector with weights for columns
+  # input:
+  # Data - raw Matrix used for Decomposition
+  # PLin - Vector with weights for lines  (in the paper, is m=rep(1/12,12))
+  # PCol - Vector with weights for columns (in the paper, is a<-c(rep(0.241,6), rep(0.239,6), rep(0.275,6), rep(0.273,5),rep(0.307,6),rep(0.302,5), rep(0.417,4), rep(0.272,6), rep(0.264,5),rep(0.309,4)))
   
   # Returns:
-  # D - Vector line with the singular values of the decomposition
-  # U - Line eigenvectors
-  # V - Column relative eigenvectors
+  # d - Vector line with the singular values of the result
+  # u - Line eigenvectors
+  # v - Column relative eigenvectors
+  
   if (is.null(PCol)) PCol <- rep(1, ncol(Data))
   
   if (is.null(PLin)) PLin <- rep(1, nrow(Data))
@@ -41,14 +41,14 @@ GSVD <- function(Data, PLin = NULL, PCol = NULL) {
   
   MSVD <- svd(AA)
   d <- MSVD$d
-  P <- MSVD$u
-  Q <- MSVD$v
+  MU <- MSVD$u
+  MV <- MSVD$v
   
-  MU <- diag(sqrt(1/PLin))%*%P
+  P <- diag(sqrt(1/PLin))%*%MU
   
-  MV <- diag(sqrt(1/PCol))%*%Q
+  Q <- diag(sqrt(1/PCol))%*%MV
   
-  Resp <- list(d = d[1:ncv], u = MU[,1:ncv], v = MV[,1:ncv])
+  Resp <- list(d = d[1:ncv], u = P[,1:ncv], v = Q[,1:ncv])
   
   return(Resp)
 }
